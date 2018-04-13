@@ -50,8 +50,6 @@ def process(eadPath):
             pass
             # it would be good to have better error handling here
 
-    #eliminate double copyright symbol 
-
     #to string for regex operations
     newXML = str(newXML)
     ##remove the namespace declarations within elements
