@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ead="urn:isbn:1-931666-22-9"
     xmlns="urn:isbn:1-931666-22-9">
     <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
-    <xsl:output omit-xml-declaration="yes" indent="yes"/>
+    <xsl:output indent="yes"/>
     <!--identity template-->
     <xsl:template match="@*|node()">
         <xsl:copy>
