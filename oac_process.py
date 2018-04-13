@@ -5,7 +5,9 @@ import codecs
 import re
 import sys
 import argparse
+import requests
 from lxml import etree
+from io import StringIO, BytesIO
 from iso639b_dict import iso639
 
 def main(args=None):
@@ -62,6 +64,20 @@ def process(eadPath):
     newXML = newXML.replace('&lt;','<')
     newXML = newXML.replace('\&gt;','>')
     newXML = newXML.replace('&gt;','>')
+
+    #Check XML validation
+    #parse newXML back into lxml
+    checkdoc = etree.parse(StringIO(newXML))
+    #grab schema from Library of Congress website
+    loc = requests.get('https://www.loc.gov/ead/ead.xsd').text
+    f = BytesIO(loc.encode('utf-8'))
+    xmlschema_doc = etree.parse(f)
+    xmlschema = etree.XMLSchema(xmlschema_doc)
+
+    if xmlschema.validate(checkdoc) == False:
+        print('Check XML document -- validation issues present.')
+    else:
+        print('XML validated')
 
     #write out to file
     with codecs.open(eadPath, 'w', 'utf-8') as outfile:
