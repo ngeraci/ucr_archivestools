@@ -4,8 +4,19 @@ import os
 import codecs
 import re
 import sys
+import argparse
 from lxml import etree
 from iso639b_dict import iso639
+
+def main(args=None):
+    parser = argparse.ArgumentParser(
+        description='oac_process takes an EAD file exported from ArchivesSpace and cleans it for upload to OAC')
+    parser.add_argument(
+        'file', nargs=1, help='file to process')
+    if args is None:
+        args = parser.parse_args()
+
+    process(args.file[0])
 
 def process(eadPath):
     xml = etree.parse(eadPath)
@@ -70,4 +81,6 @@ def process(eadPath):
     print(outpath,'processing completed')
     sys.stdout.flush()
 
-process('EASTWOOD_20180413_000551_UTC__ead.xml')
+# main() idiom
+if __name__ == "__main__":
+    sys.exit(main())
