@@ -75,7 +75,7 @@ def process(eadPath):
     xmlschema = etree.XMLSchema(xmlschema_doc)
 
     if xmlschema.validate(checkdoc) == False:
-        print('Check XML document -- validation issues present.')
+        print('WARNING: XML validation failed. Check document for errors.')
     else:
         print('XML validated')
 
