@@ -73,7 +73,7 @@ def process(eadPath):
     f = BytesIO(loc.encode('utf-8'))
     xmlschema_doc = etree.parse(f)
     xmlschema = etree.XMLSchema(xmlschema_doc)
-
+    #evaluate and print validation status
     if xmlschema.validate(checkdoc) == False:
         print('WARNING: XML validation failed. Check document for errors.')
     else:
