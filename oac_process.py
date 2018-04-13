@@ -53,7 +53,8 @@ def process(eadPath):
             # it would be good to have better error handling here
 
     #to string for regex operations
-    newXML = str(newXML)
+    newXML = str(etree.tostring(newXML, pretty_print=True, xml_declaration=True, encoding='UTF-8'),'utf-8')
+
     ##remove the namespace declarations within elements
     newXML = re.sub(r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"\s+xmlns:ead="urn:isbn:1-931666-22-9"','',newXML)
     #lowercase "linear feet"
@@ -90,10 +91,11 @@ def process(eadPath):
 def validate(xmlString):
     #validate against schema
     #parse string back into lxml
-    checkdoc = etree.parse(StringIO(xmlString))
+    checkdoc = bytes(xmlString,'utf-8')
+    checkdoc = etree.parse(BytesIO(checkdoc))
     #grab schema from Library of Congress website
     loc = requests.get('https://www.loc.gov/ead/ead.xsd').text
-    f = BytesIO(loc.encode('utf-8'))
+    f = BytesIO(bytes(loc,'utf-8'))
     xmlschema_doc = etree.parse(f)
     xmlschema = etree.XMLSchema(xmlschema_doc)
     #evaluate and print validation status

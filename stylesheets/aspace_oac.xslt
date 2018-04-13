@@ -2,8 +2,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ead="urn:isbn:1-931666-22-9"
     xmlns="urn:isbn:1-931666-22-9">
-    <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
-    <xsl:output indent="yes"/>
+    <xsl:output method="xml" encoding="UTF-8"/>
     <!--identity template-->
     <xsl:template match="@*|node()">
         <xsl:copy>
