@@ -65,19 +65,8 @@ def process(eadPath):
     newXML = newXML.replace('\&gt;','>')
     newXML = newXML.replace('&gt;','>')
 
-    #Check XML validation
-    #parse newXML back into lxml
-    checkdoc = etree.parse(StringIO(newXML))
-    #grab schema from Library of Congress website
-    loc = requests.get('https://www.loc.gov/ead/ead.xsd').text
-    f = BytesIO(loc.encode('utf-8'))
-    xmlschema_doc = etree.parse(f)
-    xmlschema = etree.XMLSchema(xmlschema_doc)
-    #evaluate and print validation status
-    if xmlschema.validate(checkdoc) == False:
-        print('WARNING: XML validation failed. Check document for errors.')
-    else:
-        print('XML validated')
+    #call xml validation function
+    validate(newXML)
 
     #write out to file
     with codecs.open(eadPath, 'w', 'utf-8') as outfile:
@@ -97,6 +86,21 @@ def process(eadPath):
     #print confirmation
     print(outpath,'processing completed')
     sys.stdout.flush()
+
+def validate(xmlString):
+    #validate against schema
+    #parse string back into lxml
+    checkdoc = etree.parse(StringIO(xmlString))
+    #grab schema from Library of Congress website
+    loc = requests.get('https://www.loc.gov/ead/ead.xsd').text
+    f = BytesIO(loc.encode('utf-8'))
+    xmlschema_doc = etree.parse(f)
+    xmlschema = etree.XMLSchema(xmlschema_doc)
+    #evaluate and print validation status
+    if xmlschema.validate(checkdoc) == False:
+        print('WARNING: XML validation failed. Check document for errors.')
+    else:
+        print('XML validated')
 
 # main() idiom
 if __name__ == "__main__":
