@@ -14,11 +14,12 @@ def main(args=None):
     parser = argparse.ArgumentParser(
         description='oac_process takes an EAD file exported from ArchivesSpace and cleans it for upload to OAC')
     parser.add_argument(
-        'file', nargs=1, help='file to process')
+        'files', nargs='*', help='one or more files to process')
     if args is None:
         args = parser.parse_args()
 
-    process(args.file[0])
+    for i, value in enumerate(args.files):
+    	process(args.files[i])
 
 def process(eadPath):
     xml = etree.parse(eadPath)
