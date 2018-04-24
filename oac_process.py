@@ -49,9 +49,8 @@ def process(eadPath):
             if langname in langmat.text:
                 langmarkup = '<language langcode="' + isodict.get(langname) + '"\>' +  langname + '</language>'
                 langmat.text = langmat.text.replace(langname, langmarkup, 1)
-        except KeyError:
-            pass
-            # it would be good to have better error handling here
+        except TypeError: #this gets thrown when already has language element as child
+        	pass
 
     #to string for regex operations
     newXML = str(etree.tostring(newXML, pretty_print=True, xml_declaration=True, encoding='UTF-8'),'utf-8')
