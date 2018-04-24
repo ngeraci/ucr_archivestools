@@ -49,7 +49,7 @@ def process(eadPath):
             if langname in langmat.text:
                 langmarkup = '<language langcode="' + isodict.get(langname) + '"\>' +  langname + '</language>'
                 langmat.text = langmat.text.replace(langname, langmarkup, 1)
-        except:
+        except KeyError:
             pass
             # it would be good to have better error handling here
 
