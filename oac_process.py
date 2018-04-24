@@ -22,9 +22,9 @@ def main(args=None):
     	process(args.files[i])
 
 def process(eadPath):
-    xml = etree.parse(eadPath)
-    ns = '{urn:isbn:1-931666-22-9}'
     parser = etree.XMLParser(resolve_entities=False, strip_cdata=False, remove_blank_text=True)
+    xml = etree.parse(eadPath, parser)
+    ns = '{urn:isbn:1-931666-22-9}'
     xslFile = 'stylesheets/aspace_oac.xslt'
     isodict = iso639()
                 
