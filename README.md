@@ -1,4 +1,4 @@
-# README
+# UCR archives tools
 
 This is the beginning of an effort to develop a set of more polished, reusable and maintanable scripts and tools for automating common tasks in UCR Special Collections & University Archives.
 ## oac_process
