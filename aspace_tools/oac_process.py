@@ -41,7 +41,6 @@ def main(args=None):
         #write out to file
         writeOut(eadFile, newXML, eadID, args.wrca, args.in_place, args.keep_raw)
 
-
 def process(eadFile):
     parser = etree.XMLParser(resolve_entities=False, strip_cdata=False, remove_blank_text=True)
     xml = etree.parse(eadFile, parser)
