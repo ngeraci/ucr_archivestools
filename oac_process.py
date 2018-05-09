@@ -25,7 +25,7 @@ def main(args=None):
 
     #special WRCA handling since filenames are weird
     isWRCA = args.wrca
-    keepRaw = args.keepRaw
+    keepRaw = args.keep_raw
 
     for i, value in enumerate(args.files):
         process(args.files[i], isWRCA, keepRaw)
@@ -75,11 +75,11 @@ def process(eadFile, isWRCA, keepRaw):
     newXML = newXML.replace('\&gt;','>')
     newXML = newXML.replace('&gt;','>')
 
-    #call xml validation function
+    #ead validation
     validate(newXML)
 
     #write out to file
-    writeOut(newXML, eadFile, isWRCA)
+    writeOut(newXML, eadFile, isWRCA, keepRaw)
 
 def validate(xmlString):
     #validate against schema
@@ -113,6 +113,8 @@ def writeOut(newXML, eadPath, isWRCA, keepRaw):
 
     #choose directory
     eadHome = "S:/Special Collections/Archives/Collections/"
+    if filename.startswith('wr'):
+        isWRCA = True
     if isWRCA == True:
         subdir = 'WRCA/WRCA_EAD/'
     elif filename.startswith('ms'):
@@ -131,6 +133,10 @@ def writeOut(newXML, eadPath, isWRCA, keepRaw):
     else:
         os.remove(absolutePath)
 
+    #print confirmation
+    print(filename,'processed')
+    print('Location:',outpath)
+    sys.stdout.flush()
 
 # main() idiom
 if __name__ == "__main__":
