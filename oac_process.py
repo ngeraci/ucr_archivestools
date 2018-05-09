@@ -6,24 +6,29 @@ import re
 import sys
 import argparse
 import requests
-import git
 from lxml import etree
 from io import StringIO, BytesIO
 from iso639b_dict import iso639
 
 def main(args=None):
     parser = argparse.ArgumentParser(
-        description='oac_process takes an EAD file exported from ArchivesSpace and cleans it for upload to OAC')
+        description='oac_process takes an EAD file exported from ArchivesSpace, does standard edits for upload to OAC, and moves it to the appropriate location in the shared drive.')
     parser.add_argument(
         'files', nargs='*', help='one or more files to process')
     parser.add_argument(
-        '--wrca', action='store_true', help='use --wrca if you are processing a WRCA file, to make sure it ends up in the right directory')
+        '--wrca', action='store_true', help='use --wrca if you are processing a WRCA file, to make sure it ends up in the WRCA folder.')
     parser.add_argument(
-        '--keep-raw', action='store_true', help='use --keep-raw if you want to keep the original file downloaded from ArchivesSpace. otherwise it will be deleted')
+        '--keep-raw', action='store_true', help='use --keep-raw if you want to keep the original file downloaded from ArchivesSpace. Otherwise, it will be deleted.')
+    
+    #print help if no args given
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
     if args is None:
         args = parser.parse_args()
 
-    #special WRCA handling since filenames are weird
+    #store variables
     isWRCA = args.wrca
     keepRaw = args.keep_raw
 
