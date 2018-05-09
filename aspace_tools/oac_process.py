@@ -108,7 +108,7 @@ def validate(xmlString):
     xmlschema = etree.XMLSchema(xmlschema_doc)
     #evaluate and print validation status
     if xmlschema.validate(checkdoc) == False:
-        print('WARNING: EAD validation failed. Check document for errors.')
+        print('WARNING: EAD validation failed. Check file for errors.')
     else:
         print('EAD validated')
 
