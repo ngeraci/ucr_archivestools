@@ -7,9 +7,12 @@ local guidelines established by UC Riverside Special Collections and
 University Archives. Its default behavior also moves the files to the
 following locations:
 
-* Manuscript Collections: "S:\Special Collections\Archives\Collections\MS\MS_EAD\"
-* University Archives: "S:\Special Collections\Archives\Collections\UA\UA_EAD\"
-* Water Resources: "S:\Special Collections\Archives\Collections\WRCA\WRCA_EAD\"
+* Manuscript Collections: 
+    "S:\Special Collections\Archives\Collections\MS\MS_EAD\"
+* University Archives:
+    "S:\Special Collections\Archives\Collections\UA\UA_EAD\"
+* Water Resources Collection & Archives:
+    "S:\Special Collections\Archives\Collections\WRCA\WRCA_EAD\"
 """
 import os
 import codecs
