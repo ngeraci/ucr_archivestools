@@ -47,7 +47,7 @@ def main(args=None):
     if args is None:
         args = parser.parse_args()
 
-    for i, value in enumerate(args.files):
+    for i in range(len(args.files)):
         ead_file = args.files[i]
         processed = process(ead_file)
         new_xml = processed[0]
