@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-"""A command line tool for cleaning up EAD files at UCR.
+r"""A command line tool for cleaning up EAD files at UCR.
 
 This tool performs a standard set of edits on EAD files, according to
 local guidelines established by UC Riverside Special Collections and
-University Archives.
+University Archives. Its default behavior also moves the files to the
+following locations:
 
+* Manuscript Collections: "S:\Special Collections\Archives\Collections\MS\MS_EAD\"
+* University Archives: "S:\Special Collections\Archives\Collections\UA\UA_EAD\"
+* Water Resources: "S:\Special Collections\Archives\Collections\WRCA\WRCA_EAD\"
 """
 import os
 import codecs
