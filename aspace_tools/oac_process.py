@@ -2,7 +2,9 @@
 
 """A command line tool for cleaning up EAD files at UCR.
 
-This tool performs a standard set of edits on EAD files, according to local guidelin
+This tool performs a standard set of edits on EAD files, according to
+local guidelines established by UC Riverside Special Collections and
+University Archives.
 
 """
 
