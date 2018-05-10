@@ -91,9 +91,11 @@ def process(ead_file):
         titleproper.remove(numtag)
         titleproper.text = titleproper.text.strip()
 
-    # ISO markup for <langmaterial> element
-    # Example:
-    ##<langmaterial>The collection is in <language langcode="eng">English</language>
+    # ISO markup for <langmaterial> element, for example:
+    # <langmaterial>The collection is in <language langcode="eng">English</language>
+    # TODO: Figure out how to do this more cleanly (not a simple fix, may require XSLT: 
+    #       * https://stackoverflow.com/questions/1973026/insert-tags-in-elementtree-text
+    #       * https://kurtraschke.com/2010/09/lxml-inserting-elements-in-text/
     langmat = new_xml.find('//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
     for lang in languages:
         code = lang.bibliographic
@@ -102,8 +104,13 @@ def process(ead_file):
                 langmarkup = '<language langcode="' + code + r'"\>' +  lang.name + '</language>'
                 langmat.text = langmat.text.replace(lang.name, langmarkup, 1)
 
-    #get ead_id to use as filename
+    #get eadid to use as filename
     ead_id = new_xml.find('//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
+
+    #lowercase "Linear Feet" in <extent>
+    extent = new_xml.find('//{0}extent'.format(namespace))
+    if 'Linear Feet' in extent.text:
+        extent.text = re.sub(r'Linear\s+Feet', 'linear feet', extent.text)
 
     #to string for regex operations
     new_xml = str(etree.tostring(
@@ -114,10 +121,7 @@ def process(ead_file):
     xmlns = re.compile(
         r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"\s+xmlns:ead="urn:isbn:1-931666-22-9"')
     new_xml = re.sub(xmlns, '', new_xml)
-    #lowercase "linear feet"
-    new_xml = re.sub(r'Linear\s+Feet', 'linear feet', new_xml)
-    #hacky angle bracket stuff for langmaterial
-    #TODO: figure out how to do the markup more elegantly w/ lxml, eliminate need for this
+    #hacky angle bracket replacement for langmaterial markup: see lines 94-105
     new_xml = new_xml.replace(r'&lt;/', r'</')
     new_xml = new_xml.replace(r'&lt;', r'<')
     new_xml = new_xml.replace(r'\&gt;', r'>')
