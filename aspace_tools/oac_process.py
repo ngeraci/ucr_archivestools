@@ -18,15 +18,15 @@ from lxml import etree
 def main(args=None):
     """Parse command line arguments. Iterate over specified EAD files to process, validate, and write out processed file."""
     parser = argparse.ArgumentParser(
-        description='oac_process takes an EAD file exported from ArchivesSpace, does standard edits for upload to OAC, and moves it to the shared drive.')
+        description="oac_process takes an EAD file exported from ArchivesSpace, does standard edits for upload to OAC, and moves it to the shared drive.")
     parser.add_argument(
-        'files', nargs='*', help='one or more files to process')
+        'files', nargs='*', help="one or more files to process")
     parser.add_argument(
-        '--wrca', action='store_true', help='use --wrca if you are processing WRCA file(s). These are processed differently because the filenames and identifiers are nonstandard.')
+        '--wrca', action='store_true', help="use --wrca when processing WRCA file(s).")
     parser.add_argument(
-        '--in-place', action='store_true', help='use --in-place if you want to process the file(s) in place (probably your Downloads folder) instead of moving it to the shared drive.')
+        '--in-place', action='store_true', help="use --in-place if you want to process the file where it is, instead of moving it to the standard shared drive location")
     parser.add_argument(
-        '--keep-raw', action='store_true', help='use --keep-raw if you want to keep the original file(s) downloaded from ArchivesSpace. Otherwise, it will be deleted.')
+        '--keep-raw', action='store_true', help="use --keep-raw if you want to keep the original file(s) downloaded from ArchivesSpace. Otherwise, they'll be deleted.")
 
     #print help if no args given
     if len(sys.argv) == 1:
@@ -88,7 +88,7 @@ def process(ead_file):
             pass
 
     #get ead_id to use as filename
-    ead_id = new_xml.find('//{0}eadheader/{0}ead_id'.format(namespace)).text.strip()
+    ead_id = new_xml.find('//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
 
     #to string for regex operations
     new_xml = str(etree.tostring(new_xml, pretty_print=True, xml_declaration=True, encoding='UTF-8'), 'utf-8')
@@ -149,16 +149,17 @@ def write_out(ead_path, new_xml, ead_id, wrca, in_place, keep_raw):
         outdir = os.path.dirname(abs_path)
         outpath = os.path.join(outdir, filename)
     else:
-        #choose directory
+        subdir = ''
         ead_home = "S:/Special Collections/Archives/Collections/"
-        if filename.startswith('wr'):
-            wrca = True
         if wrca is True:
             subdir = 'WRCA/WRCA_EAD/'
         elif filename.startswith('ms'):
             subdir = 'MS/MS_EAD/'
         elif filename.startswith('ua'):
             subdir = 'UA/UA_EAD/'
+        #if it doesn't start with MS or UA, it's probably WRCA even if user didn't specify
+        else:
+            subdir = 'WRCA/WRCA_EAD/'
         outpath = os.path.join(ead_home, subdir, filename)
 
     #write out
