@@ -185,6 +185,8 @@ def write_out(ead_path, new_xml, ead_id, wrca, in_place, keep_raw):
     #delete original exported file unless specified
     if keep_raw is True:
         pass
+    elif in_place is True:
+        pass
     else:
         os.remove(abs_path)
 
