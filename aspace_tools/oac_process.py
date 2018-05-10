@@ -7,7 +7,6 @@ local guidelines established by UC Riverside Special Collections and
 University Archives.
 
 """
-
 import os
 import codecs
 import re
