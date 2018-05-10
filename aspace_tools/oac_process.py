@@ -89,14 +89,12 @@ def process(ead_file):
     # Example:
     ##<langmaterial>The collection is in <language langcode="eng">English</language>
     langmat = new_xml.find('//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
-    for langname in isodict:
-        try:
-            if langname in langmat.text:
-                iso_code = isodict.get(langname)
-                langmarkup = '<language langcode="' + iso_code + r'"\>' +  langname + '</language>'
-                langmat.text = langmat.text.replace(langname, langmarkup, 1)
-        except TypeError: #this gets thrown when already has language element as child
-            pass
+    for lang in languages:
+        code = lang.bibliographic
+        if code is not '':
+            if lang.name in langmat.text:
+                    langmarkup = '<language langcode="' + iso_code + r'"\>' +  langname + '</language>'
+                    langmat.text = langmat.text.replace(langname, langmarkup, 1)
 
     #get ead_id to use as filename
     ead_id = new_xml.find('//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
