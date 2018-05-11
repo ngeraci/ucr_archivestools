@@ -24,13 +24,14 @@ import requests
 from lxml import etree
 from iso639 import languages
 
+
 def main(args=None):
     """Parse command line arguments.
     Iterate over EAD files to process, validate, & write new file(s).
     """
     parser = argparse.ArgumentParser(
         description="""oac_process takes an EAD file exported from
-        ArchivesSpace, does standard edits for upload to OAC, 
+        ArchivesSpace, does standard edits for upload to OAC,
         and moves it to the shared drive.""")
     parser.add_argument(
         'files', nargs='*', help="one or more files to process")
@@ -39,14 +40,14 @@ def main(args=None):
         processing WRCA file(s).""")
     parser.add_argument(
         '--in-place', action='store_true', help="""use --in-place if
-        you want to process the file where it is, instead of moving it 
+        you want to process the file where it is, instead of moving it
         to the standard shared drive location""")
     parser.add_argument(
         '--keep-raw', action='store_true', help="""use --keep-raw if
         you want to keep the original file(s) downloaded from
         ArchivesSpace. Otherwise, they'll be deleted.""")
 
-    #print help if no args given
+    # print help if no args given
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit(1)
@@ -61,9 +62,10 @@ def main(args=None):
             finding_aid.validate()
             finding_aid.write_out()
         except OSError:
-            print("*ERROR*\nFile not found:",args.files[i])
+            print("*ERROR*\nFile not found:", args.files[i])
         except SyntaxError:
-            print("*ERROR*\nNot an EAD file:",args.files[i])
+            print("*ERROR*\nNot an EAD file:", args.files[i])
+
 
 class FindingAid(object):
     """
@@ -108,11 +110,11 @@ class FindingAid(object):
             Assigns <eadid> value to self.ead_id.
             """
             namespace = '{urn:isbn:1-931666-22-9}'
-            #get <eadid> to use as filename
+            # get <eadid> to use as filename
             self.ead_id = self.new_xml.find(
                 '//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
 
-            #strip <num> tag from <titleproper>
+            # strip <num> tag from <titleproper>
             numtag = self.new_xml.find('//{0}titleproper/{0}num'.format(namespace))
             if numtag is not None:
                 titleproper = numtag.getparent()
@@ -138,29 +140,28 @@ class FindingAid(object):
                 print('Check <langmaterial> element: possible markup error.')
                 sys.stdout.flush()
 
-            #lowercase "Linear Feet" in <extent>
+            # lowercase "Linear Feet" in <extent>
             extent = self.new_xml.find('//{0}extent'.format(namespace))
             if 'Linear Feet' in extent.text:
                 extent.text = re.sub(r'Linear\s+Feet', 'linear feet', extent.text)
-
 
         def string_operations(self):
             """
             Converts self.new_xml to string.
             Performs final tidying.
             """
-            #XML to string
+            # XML to string
             self.new_xml = str(etree.tostring(
                 self.new_xml, pretty_print=True, xml_declaration=True, encoding='UTF-8'
                 ), 'utf-8')
 
-            #remove namespace declarations within individual elements
+            # remove namespace declarations within individual elements
             xmlns = re.compile(
                 r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"'
                 r'\s+xmlns:ead="urn:isbn:1-931666-22-9"')
             self.new_xml = re.sub(xmlns, '', self.new_xml)
 
-            #unescape angle brackets: fix for hacky <language> markup
+            # unescape angle brackets: fix for hacky <language> markup
             self.new_xml = self.new_xml.replace(r'&lt;/', r'</')
             self.new_xml = self.new_xml.replace(r'&lt;', r'<')
             self.new_xml = self.new_xml.replace(r'\&gt;', r'>')
@@ -170,20 +171,19 @@ class FindingAid(object):
         lxml_operations(self)
         string_operations(self)
 
-
     def validate(self):
         """Validates EAD against schema and print results."""
-        #parse string back into lxml
+        # parse string back into lxml
         checkdoc = bytes(self.new_xml, 'utf-8')
         checkdoc = etree.parse(BytesIO(checkdoc))
 
-        #get schema from Library of Congress website
+        # get schema from Library of Congress website
         loc = requests.get('https://www.loc.gov/ead/ead.xsd').text
         bytes_schema = BytesIO(bytes(loc, 'utf-8'))
         xmlschema_doc = etree.parse(bytes_schema)
         xmlschema = etree.XMLSchema(xmlschema_doc)
 
-        #evaluate and print validation status
+        # evaluate and print validation status
         if xmlschema.validate(checkdoc) is False:
             print('WARNING: EAD validation failed. Check file for errors.')
         else:
@@ -194,16 +194,16 @@ class FindingAid(object):
         filename = os.path.basename(self.ead_path)
         abs_path = os.path.abspath(self.ead_path)
 
-        #normalize filename if it matches ArchivesSpace automated naming scheme
+        # normalize filename if it matches ArchivesSpace automated naming scheme
         aspace_re = re.compile(r'([A-Za-z0-9\.]+)_[0-9]{8}_[0-9]{6}_UTC__ead\.xml')
         autonamed = aspace_re.match(filename)
         if autonamed is not None:
             filename = self.ead_id
-        #leave other filenames alone
+        # leave other filenames alone
         else:
             pass
 
-        #set outpath
+        # set outpath
         if self.in_place is True:
             outdir = os.path.dirname(abs_path)
             outpath = os.path.join(outdir, filename)
@@ -216,16 +216,16 @@ class FindingAid(object):
                 subdir = 'MS/MS_EAD/'
             elif filename.startswith('ua'):
                 subdir = 'UA/UA_EAD/'
-            #if it doesn't start with MS or UA, it's probably WRCA even if user didn't specify
+            # if it doesn't start with MS or UA, it's probably WRCA even if user didn't specify
             else:
                 subdir = 'WRCA/WRCA_EAD/'
             outpath = os.path.join(ead_home, subdir, filename)
 
-        #write out
+        # write out
         with codecs.open(outpath, 'w', 'utf-8') as outfile:
             outfile.write(self.new_xml)
 
-        #delete original exported file unless specified
+        # delete original exported file unless specified
         if self.keep_raw is True:
             pass
         elif self.in_place is True:
@@ -233,7 +233,7 @@ class FindingAid(object):
         else:
             os.remove(abs_path)
 
-        #print confirmation
+        # print confirmation
         print(filename, 'processed')
         print('Location:', outpath)
         sys.stdout.flush()
