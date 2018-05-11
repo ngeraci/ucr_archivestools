@@ -84,7 +84,8 @@ class FindingAid(object):
             Applies XSLT transformation.
             Assigns processed EAD string to self.new_xml.
             """
-            parser = etree.XMLParser(resolve_entities=False, strip_cdata=False, remove_blank_text=True)
+            parser = etree.XMLParser(resolve_entities=False, strip_cdata=False,
+                                     remove_blank_text=True)
             xml_tree = etree.parse(self.ead_path, parser)
 
             working_dir = os.path.dirname(os.path.abspath(__file__))
@@ -103,7 +104,8 @@ class FindingAid(object):
             """
             namespace = '{urn:isbn:1-931666-22-9}'
             #get <eadid> to use as filename
-            self.ead_id = self.new_xml.find('//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
+            self.ead_id = self.new_xml.find(
+                '//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
 
             #strip <num> tag from <titleproper>
             numtag = self.new_xml.find('//{0}titleproper/{0}num'.format(namespace))
@@ -117,7 +119,8 @@ class FindingAid(object):
             # TODO: Figure out how to do this more cleanly (not a simple fix, may require XSLT):
             #       * https://stackoverflow.com/questions/1973026/insert-tags-in-elementtree-text
             #       * https://kurtraschke.com/2010/09/lxml-inserting-elements-in-text/
-            langmaterial = self.new_xml.find('//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
+            langmaterial = self.new_xml.find(
+                '//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
             if langmaterial.text is not None:
                 for lang in languages:
                     code = lang.bibliographic
@@ -148,7 +151,8 @@ class FindingAid(object):
 
             #remove namespace declarations within individual elements
             xmlns = re.compile(
-                r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"\s+xmlns:ead="urn:isbn:1-931666-22-9"')
+                r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"'
+                r'\s+xmlns:ead="urn:isbn:1-931666-22-9"')
             self.new_xml = re.sub(xmlns, '', self.new_xml)
 
             #unescape angle brackets: fix for hacky <language> markup
