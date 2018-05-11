@@ -55,10 +55,13 @@ def main(args=None):
         args = parser.parse_args()
 
     for i in range(len(args.files)):
-        finding_aid = FindingAid(args.files[i], args.wrca, args.in_place, args.keep_raw)
-        finding_aid.process()
-        finding_aid.validate()
-        finding_aid.write_out()
+        try:
+            finding_aid = FindingAid(args.files[i], args.wrca, args.in_place, args.keep_raw)
+            finding_aid.process()
+            finding_aid.validate()
+            finding_aid.write_out()
+        except OSError:
+            print("File not found:",args.files[i])
 
 class FindingAid(object):
     """
