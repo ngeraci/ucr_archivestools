@@ -61,7 +61,9 @@ def main(args=None):
             finding_aid.validate()
             finding_aid.write_out()
         except OSError:
-            print("File not found:",args.files[i])
+            print("*ERROR*\nFile not found:",args.files[i])
+        except SyntaxError:
+            print("*ERROR*\nNot an XML file:",args.files[i])
 
 class FindingAid(object):
     """
