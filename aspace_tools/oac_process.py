@@ -73,74 +73,97 @@ class FindingAid(object):
         self.keep_raw = keep_raw
 
     def process(self):
-        """Process EAD using XSLT, LXML and some string cleanup.
+        """
+        Process EAD using XSLT, LXML and some string cleanup.
         Assign processed EAD string to self.new_xml.
         Assign <eadid> element from EAD to self.ead_id.
 
         """
-        parser = etree.XMLParser(resolve_entities=False, strip_cdata=False, remove_blank_text=True)
-        xml_tree = etree.parse(self.ead_path, parser)
-        namespace = '{urn:isbn:1-931666-22-9}'
+        def xslt_transform(self):
+            """
+            Applies XSLT transformation.
+            Assigns processed EAD string to self.new_xml.
+            """
+            parser = etree.XMLParser(resolve_entities=False, strip_cdata=False, remove_blank_text=True)
+            xml_tree = etree.parse(self.ead_path, parser)
 
-        working_dir = os.path.dirname(os.path.abspath(__file__))
-        stylesheet = 'stylesheets/aspace_oac.xslt'
-        xsl_file = os.path.join(working_dir, stylesheet)
+            working_dir = os.path.dirname(os.path.abspath(__file__))
+            stylesheet = 'stylesheets/aspace_oac.xslt'
+            xsl_file = os.path.join(working_dir, stylesheet)
 
-        #apply XSLT (does the majority of processing)
-        xslt = etree.parse(xsl_file)
-        transform = etree.XSLT(xslt)
-        self.new_xml = transform(xml_tree)
+            xslt = etree.parse(xsl_file)
+            transform = etree.XSLT(xslt)
+            self.new_xml = transform(xml_tree)
 
-        #get <eadid> to use as filename
-        self.ead_id = self.new_xml.find('//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
+        def lxml_operations(self):
+            """
+            Perform additional cleanup using pure LXML.
+            Updates value of self.new_xml.
+            Assigns <eadid> value to self.ead_id.
+            """
+            namespace = '{urn:isbn:1-931666-22-9}'
+            #get <eadid> to use as filename
+            self.ead_id = self.new_xml.find('//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
 
-        #strip <num> tag from <titleproper>
-        numtag = self.new_xml.find('//{0}titleproper/{0}num'.format(namespace))
-        if numtag is not None:
-            titleproper = numtag.getparent()
-            titleproper.remove(numtag)
-            titleproper.text = titleproper.text.strip()
+            #strip <num> tag from <titleproper>
+            numtag = self.new_xml.find('//{0}titleproper/{0}num'.format(namespace))
+            if numtag is not None:
+                titleproper = numtag.getparent()
+                titleproper.remove(numtag)
+                titleproper.text = titleproper.text.strip()
 
-        # ISO markup for <langmaterial> element, for example:
-        # <langmaterial>The collection is in <language langcode="eng">English</language>
-        # TODO: Figure out how to do this more cleanly (not a simple fix, may require XSLT):
-        #       * https://stackoverflow.com/questions/1973026/insert-tags-in-elementtree-text
-        #       * https://kurtraschke.com/2010/09/lxml-inserting-elements-in-text/
-        langmaterial = self.new_xml.find('//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
-        if langmaterial.text is not None:
-            for lang in languages:
-                code = lang.bibliographic
-                if code != '':
-                    if lang.name in langmaterial.text:
-                        langmarkup = '<language langcode="' + code + r'"\>' +  lang.name + '</language>'
-                        langmaterial.text = langmaterial.text.replace(lang.name, langmarkup, 1)
-        else:
-            print('Check <langmaterial> element: possible markup error.')
-            sys.stdout.flush()
+            # ISO markup for <langmaterial> element, for example:
+            # <langmaterial>The collection is in <language langcode="eng">English</language>
+            # TODO: Figure out how to do this more cleanly (not a simple fix, may require XSLT):
+            #       * https://stackoverflow.com/questions/1973026/insert-tags-in-elementtree-text
+            #       * https://kurtraschke.com/2010/09/lxml-inserting-elements-in-text/
+            langmaterial = self.new_xml.find('//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
+            if langmaterial.text is not None:
+                for lang in languages:
+                    code = lang.bibliographic
+                    if code != '':
+                        if lang.name in langmaterial.text:
+                            langmarkup = ('<language langcode="' + code + r'"\>'
+                                          + lang.name + '</language>')
+                            langmaterial.text = langmaterial.text.replace(lang.name, langmarkup, 1)
+            else:
+                print('Check <langmaterial> element: possible markup error.')
+                sys.stdout.flush()
 
-        #lowercase "Linear Feet" in <extent>
-        extent = self.new_xml.find('//{0}extent'.format(namespace))
-        if 'Linear Feet' in extent.text:
-            extent.text = re.sub(r'Linear\s+Feet', 'linear feet', extent.text)
+            #lowercase "Linear Feet" in <extent>
+            extent = self.new_xml.find('//{0}extent'.format(namespace))
+            if 'Linear Feet' in extent.text:
+                extent.text = re.sub(r'Linear\s+Feet', 'linear feet', extent.text)
 
-        #XML to string
-        self.new_xml = str(etree.tostring(
-            self.new_xml, pretty_print=True, xml_declaration=True, encoding='UTF-8'
-            ), 'utf-8')
 
-        #remove namespace declarations within individual elements
-        xmlns = re.compile(
-            r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"\s+xmlns:ead="urn:isbn:1-931666-22-9"')
-        self.new_xml = re.sub(xmlns, '', self.new_xml)
+        def string_operations(self):
+            """
+            Converts self.new_xml to string.
+            Performs final tidying.
+            """
+            #XML to string
+            self.new_xml = str(etree.tostring(
+                self.new_xml, pretty_print=True, xml_declaration=True, encoding='UTF-8'
+                ), 'utf-8')
 
-        #unescape angle brackets: fix for hacky <language> markup
-        self.new_xml = self.new_xml.replace(r'&lt;/', r'</')
-        self.new_xml = self.new_xml.replace(r'&lt;', r'<')
-        self.new_xml = self.new_xml.replace(r'\&gt;', r'>')
-        self.new_xml = self.new_xml.replace(r'&gt;', r'>')
+            #remove namespace declarations within individual elements
+            xmlns = re.compile(
+                r'xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"\s+xmlns:ead="urn:isbn:1-931666-22-9"')
+            self.new_xml = re.sub(xmlns, '', self.new_xml)
+
+            #unescape angle brackets: fix for hacky <language> markup
+            self.new_xml = self.new_xml.replace(r'&lt;/', r'</')
+            self.new_xml = self.new_xml.replace(r'&lt;', r'<')
+            self.new_xml = self.new_xml.replace(r'\&gt;', r'>')
+            self.new_xml = self.new_xml.replace(r'&gt;', r'>')
+
+        xslt_transform(self)
+        lxml_operations(self)
+        string_operations(self)
+
 
     def validate(self):
-        """Validate EAD against schema and print results."""
+        """Validates EAD against schema and print results."""
         #parse string back into lxml
         checkdoc = bytes(self.new_xml, 'utf-8')
         checkdoc = etree.parse(BytesIO(checkdoc))
