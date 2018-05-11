@@ -63,7 +63,7 @@ def main(args=None):
         except OSError:
             print("*ERROR*\nFile not found:",args.files[i])
         except SyntaxError:
-            print("*ERROR*\nNot an XML file:",args.files[i])
+            print("*ERROR*\nNot an EAD file:",args.files[i])
 
 class FindingAid(object):
     """
