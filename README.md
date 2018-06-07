@@ -21,7 +21,7 @@ Its default behavior also moves the files to the following standard locations on
     "S:\Special Collections\Archives\Collections\WRCA\WRCA_EAD\"
 
 **Example**:
-Run the command `oac-process "UA.398_20180424_193147_UTC__ead.xml"`
+`oac-process "UA.398_20180424_193147_UTC__ead.xml"`
 
 **Output**:
 ````
@@ -29,7 +29,7 @@ EAD validated
 ua398.xml processing completed
 ````
 
-Note that moving the file to the shared drive will **overwrite** any existing file with the same name. If you don't want this, use the option `--in-place`.
+**Note**: The default of moving the file to the shared drive will **overwrite** any existing file with the same name. If you don't want this, use the option `--in-place`.
 
 ### Usage & options
 ```
@@ -53,3 +53,4 @@ Optional arguments work like this: `oac-process --wrca MS.20106_20180607_000126_
 `oac-process "MS.052_20180424_194135_UTC__ead.xml" "UA.365_20180424_194010_UTC__ead.xml"`
 
 They'll be processed in sequential order.
+
