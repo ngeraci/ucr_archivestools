@@ -3,9 +3,11 @@
 This is the beginning of an effort to develop a set of more polished, reusable and maintanable scripts and tools for automating common tasks in UCR Special Collections & University Archives (and adjacent work in technical services and digital initiatives).
 
 ## Installation
-`git clone https://github.com/ngeraci/ucr_archivestools.git
+````
+git clone https://github.com/ngeraci/ucr_archivestools.git
 cd ucr_archivestools
-python setup.py install`
+python setup.py install
+````
 
 ## oac-process
 **oac-process** takes one or more EAD files exported with ArchivesSpace defaults and tidies them up according to local guidelines. It validates the EAD to alert to any errors or issues. The resulting file is an EAD file ready for upload to OAC.
@@ -18,7 +20,16 @@ Its default behavior also moves the files to the following standard locations on
 * Water Resources Collection & Archives:
     "S:\Special Collections\Archives\Collections\WRCA\WRCA_EAD\"
 
-Note that moving the file to the shared drive will overwrite any existing file with the same name. If you don't want this, use the option `--in-place`.
+**Example**:
+Run the command `oac-process "UA.398_20180424_193147_UTC__ead.xml"`
+
+**Output**:
+````
+EAD validated
+ua398.xml processing completed
+````
+
+Note that moving the file to the shared drive will **overwrite** any existing file with the same name. If you don't want this, use the option `--in-place`.
 
 ### Usage & options
 ```
@@ -35,17 +46,6 @@ optional arguments:
   --keep-raw  use --keep-raw if you want to keep the original file(s)
               downloaded from ArchivesSpace. Otherwise, they'll be deleted.
 ```
-
-#### Example
-Run the command `oac-process "UA.398_20180424_193147_UTC__ead.xml"`
-
-#### Output
-````
-EAD validated
-ua398.xml processing completed
-````
-The original export has been replaced by the processed file.
-
 Optional arguments work like this: `oac-process --wrca MS.20106_20180607_000126_UTC__ead.xml`
 
 **To process more than one file at a time**, simply list them separated by spaces:
