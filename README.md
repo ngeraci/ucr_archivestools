@@ -2,13 +2,6 @@
 
 This is the beginning of an effort to develop a set of more polished, reusable and maintanable scripts and tools for automating common tasks in UCR Special Collections & University Archives (and adjacent work in technical services and digital initiatives).
 
-## Installation
-````
-git clone https://github.com/ngeraci/ucr_archivestools.git
-cd ucr_archivestools
-python setup.py install
-````
-
 ## oac-process
 **oac-process** takes one or more EAD files exported with ArchivesSpace defaults and tidies them up according to local guidelines. It validates the EAD to alert to any errors or issues. The resulting file is an EAD file ready for upload to OAC.
 
