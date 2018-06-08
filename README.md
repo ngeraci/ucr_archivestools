@@ -15,7 +15,7 @@ Its default behavior also moves the files to the following standard locations on
 
 **Example**:
 
-`oac-process "UA.398_20180424_193147_UTC__ead.xml"`
+`oac-process UA.398_20180424_193147_UTC__ead.xml`
 
 **Output**:
 ````
@@ -44,7 +44,7 @@ Optional arguments work like this: `oac-process --wrca MS.20106_20180607_000126_
 
 **To process more than one file at a time**, simply list them separated by spaces:
 
-`oac-process "MS.052_20180424_194135_UTC__ead.xml" "UA.365_20180424_194010_UTC__ead.xml"`
+`oac-process MS.052_20180424_194135_UTC__ead.xml UA.365_20180424_194010_UTC__ead.xml`
 
 They'll be processed in sequential order.
 
