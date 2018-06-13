@@ -10,8 +10,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'oac-process = aspace_tools.oac_process:main'
-            'marc-process = aspace_tools.marc_process:main',
+            'oac-process = aspace_tools.oac_process:main',
+            'marc-process = aspace_tools.marc_process:main'
         ]
     }
 )
