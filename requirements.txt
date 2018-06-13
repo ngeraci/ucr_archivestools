@@ -6,3 +6,4 @@ lxml==4.2.1
 requests==2.18.4
 urllib3==1.22
 wincertstore==0.2
+pymarc==3.1.7

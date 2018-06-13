@@ -6,11 +6,12 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'requests', 'lxml', 'iso-639'
+        'requests', 'lxml', 'iso-639', 'pymarc'
     ],
     entry_points={
         'console_scripts': [
-            'oac-process = aspace_tools.oac_process:main',
+            'oac-process = aspace_tools.oac_process:main'
+            'marc-process = aspace_tools.marc_process:main',
         ]
     }
 )
