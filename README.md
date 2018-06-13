@@ -7,6 +7,7 @@ If you work at UCR Library, start with our [local wiki](https://libwiki.ucr.edu/
 If you don't work at UCR Library, it's unlikely that these tools will be directly useful to you, but could potentially serve as a reference for getting started writing code and building command-line tools in an archives context.
 
 ## Installation
+(these are generic instructions- at UCR Library, see [local wiki](https://libwiki.ucr.edu/display/CSCD/SCUA+Python+tools))
 ````
 git clone https://github.com/ngeraci/ucr_archivestools.git
 cd ucr_archivestools
