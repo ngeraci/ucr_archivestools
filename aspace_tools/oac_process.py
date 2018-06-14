@@ -24,7 +24,6 @@ import requests
 from lxml import etree
 from iso639 import languages
 
-
 def main(args=None):
     """Parse command line arguments.
     Iterate over EAD files to process, validate, & write new file(s).
