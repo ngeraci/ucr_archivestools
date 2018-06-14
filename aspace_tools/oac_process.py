@@ -65,7 +65,6 @@ def main(args=None):
         except SyntaxError:
             print("*ERROR*\nNot an EAD file:", args.files[i])
 
-
 class FindingAid(object):
     """
     Finding aid object represents an EAD file for an archival finding aid.
