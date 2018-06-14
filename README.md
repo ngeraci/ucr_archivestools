@@ -1,17 +1,23 @@
 # UCR archives tools
 
-This is the beginning of an effort to develop a set of more polished, reusable and maintanable scripts and tools for automating common tasks in UCR Special Collections & University Archives (and adjacent work in technical services and digital initiatives).
+This is the beginning of an effort to develop command-line tools that automate common tasks in UCR Special Collections & University Archives (and adjacent work in technical services and digital initiatives).
+
+If you work at UCR Library, start with our [local wiki](https://libwiki.ucr.edu/display/CSCD/SCUA+Python+tools): it has more detailed information about setup and usage.
+
+If you don't work at UCR Library, it's unlikely that these tools will be directly useful to you, but could potentially serve as a reference for getting started writing code and building command-line tools in an archives context.
+
+## Installation
+(these are generic instructions: at UCR Library, see [local wiki](https://libwiki.ucr.edu/display/CSCD/SCUA+Python+tools))
+````
+git clone https://github.com/ngeraci/ucr_archivestools.git
+cd ucr_archivestools
+python setup.py install
+````
 
 ## oac-process
 **oac-process** takes one or more EAD files exported with ArchivesSpace defaults and tidies them up according to local guidelines. It validates the EAD to alert to any errors or issues. The resulting file is an EAD file ready for upload to OAC.
 
-Its default behavior also moves the files to the following standard locations on the shared drive:
-* Manuscript Collections:
-    "S:\Special Collections\Archives\Collections\MS\MS_EAD\"
-* University Archives:
-    "S:\Special Collections\Archives\Collections\UA\UA_EAD\"
-* Water Resources Collection & Archives:
-    "S:\Special Collections\Archives\Collections\WRCA\WRCA_EAD\"
+Its default behavior also moves the files to standard locations on the UCR Library shared drive.
 
 **Example**:
 
