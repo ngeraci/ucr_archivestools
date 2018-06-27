@@ -1,6 +1,8 @@
 # UCR archives tools
 
-This is the beginning of an effort to develop command-line tools that automate common tasks in UCR Special Collections & University Archives (and adjacent work in technical services and digital initiatives). For older cleanup project scripts, see [archivesspace_scripts](https://github.com/ngeraci/archivesspace_scripts).
+This is the beginning of an effort to develop command-line tools that automate common tasks in UCR Special Collections & University Archives (and adjacent work in technical services and digital initiatives). 
+
+For older cleanup project scripts, see **[archivesspace_scripts]**(https://github.com/ngeraci/archivesspace_scripts).
 
 If you work at UCR Library, start with our [local wiki](https://libwiki.ucr.edu/display/CSCD/SCUA+Python+tools): it has more detailed information about setup and usage.
 
