@@ -24,7 +24,6 @@ import requests
 from lxml import etree
 from iso639 import languages
 
-
 def main(args=None):
     """Parse command line arguments.
     Iterate over EAD files to process, validate, & write new file(s).
@@ -69,7 +68,6 @@ def main(args=None):
         if not args.ignore_validate:
             finding_aid.validate()
         finding_aid.write_out()
-
 
 class FindingAid(object):
     """
