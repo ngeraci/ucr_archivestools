@@ -46,6 +46,9 @@ def main(args=None):
         '--keep-raw', action='store_true', help="""use --keep-raw if
         you want to keep the original file(s) downloaded from
         ArchivesSpace. Otherwise, they'll be deleted.""")
+    parser.add_argument(
+        '--ignore-validate', action='store_true', help="""use --ignore-validate
+        to ignore EAD validation errors.""")
 
     # print help if no args given
     if len(sys.argv) == 1:
@@ -59,12 +62,13 @@ def main(args=None):
         try:
             finding_aid = FindingAid(args.files[i], args.wrca, args.in_place, args.keep_raw)
             finding_aid.process()
-            finding_aid.validate()
-            finding_aid.write_out()
         except OSError:
             print("*ERROR*\nFile not found:", args.files[i])
         except SyntaxError:
-            print("*ERROR*\nNot an EAD file:", args.files[i])
+            print("*ERROR*\nNot a valid EAD file:", args.files[i])
+        if not args.ignore_validate:
+            finding_aid.validate()
+        finding_aid.write_out()
 
 
 class FindingAid(object):
