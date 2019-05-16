@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 r"""A command line tool for cleaning up EAD files at UCR.
 
 This tool performs a standard set of edits on EAD files, according to
@@ -24,6 +23,7 @@ import requests
 from lxml import etree
 from iso639 import languages
 
+
 def main(args=None):
     """Parse command line arguments.
     Iterate over EAD files to process, validate, & write new file(s).
@@ -35,18 +35,26 @@ def main(args=None):
     parser.add_argument(
         'files', nargs='*', help="one or more files to process")
     parser.add_argument(
-        '--wrca', action='store_true', help="""use --wrca when
+        '--wrca',
+        action='store_true',
+        help="""use --wrca when
         processing WRCA file(s).""")
     parser.add_argument(
-        '--in-place', action='store_true', help="""use --in-place if
+        '--in-place',
+        action='store_true',
+        help="""use --in-place if
         you want to process the file where it is, instead of moving it
         to the standard shared drive location""")
     parser.add_argument(
-        '--keep-raw', action='store_true', help="""use --keep-raw if
+        '--keep-raw',
+        action='store_true',
+        help="""use --keep-raw if
         you want to keep the original file(s) downloaded from
         ArchivesSpace. Otherwise, they'll be deleted.""")
     parser.add_argument(
-        '--ignore-validate', action='store_true', help="""use --ignore-validate
+        '--ignore-validate',
+        action='store_true',
+        help="""use --ignore-validate
         to ignore EAD validation errors.""")
 
     # print help if no args given
@@ -59,7 +67,8 @@ def main(args=None):
 
     for i in range(len(args.files)):
         try:
-            finding_aid = FindingAid(args.files[i], args.wrca, args.in_place, args.keep_raw)
+            finding_aid = FindingAid(args.files[i], args.wrca, args.in_place,
+                                     args.keep_raw)
             finding_aid.process()
         except OSError:
             print("*ERROR*\nFile not found:", args.files[i])
@@ -69,10 +78,12 @@ def main(args=None):
             finding_aid.validate()
         finding_aid.write_out()
 
+
 class FindingAid(object):
     """
     Finding aid object represents an EAD file for an archival finding aid.
     """
+
     def __init__(self, filename, wrca, in_place, keep_raw):
         self.ead_path = filename
         self.ead_id = None
@@ -88,13 +99,16 @@ class FindingAid(object):
         Assign <eadid> element from EAD to self.ead_id.
 
         """
+
         def xslt_transform(self):
             """
             Applies XSLT transformation.
             Assigns processed EAD string to self.new_xml.
             """
-            parser = etree.XMLParser(resolve_entities=False, strip_cdata=False,
-                                     remove_blank_text=True)
+            parser = etree.XMLParser(
+                resolve_entities=False,
+                strip_cdata=False,
+                remove_blank_text=True)
             xml_tree = etree.parse(self.ead_path, parser)
 
             working_dir = os.path.dirname(os.path.abspath(__file__))
@@ -117,7 +131,8 @@ class FindingAid(object):
                 '//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
 
             # strip <num> tag from <titleproper>
-            numtag = self.new_xml.find('//{0}titleproper/{0}num'.format(namespace))
+            numtag = self.new_xml.find(
+                '//{0}titleproper/{0}num'.format(namespace))
             if numtag is not None:
                 titleproper = numtag.getparent()
                 titleproper.remove(numtag)
@@ -135,9 +150,10 @@ class FindingAid(object):
                     code = lang.bibliographic
                     if code != '':
                         if lang.name in langmaterial.text:
-                            langmarkup = ('<language langcode="' + code + r'"\>'
-                                          + lang.name + '</language>')
-                            langmaterial.text = langmaterial.text.replace(lang.name, langmarkup, 1)
+                            langmarkup = ('<language langcode="' + code +
+                                          r'"\>' + lang.name + '</language>')
+                            langmaterial.text = langmaterial.text.replace(
+                                lang.name, langmarkup, 1)
             else:
                 print('Check <langmaterial> element: possible markup error.')
                 sys.stdout.flush()
@@ -145,7 +161,24 @@ class FindingAid(object):
             # lowercase "Linear Feet" in <extent>
             extent = self.new_xml.find('//{0}extent'.format(namespace))
             if 'Linear Feet' in extent.text:
-                extent.text = re.sub(r'Linear\s+Feet', 'linear feet', extent.text)
+                extent.text = re.sub(r'Linear\s+Feet', 'linear feet',
+                                     extent.text)
+
+            # simple list bug: https://archivesspace.atlassian.net/browse/ANW-275
+            ## currently using blunt method to make sure list in arrangement section has type "simple"
+            ## (since that's where we normally mean to use unordered lists)
+            series_list = self.new_xml.find(
+                '//{0}arrangement/{0}list'.format(namespace))
+            if series_list:
+                series_list.attrib['type'] = 'simple'
+
+            # digital objects
+            ## remove "xlink:audience" attribute from all DAOs
+            ## see https://archivesspace.atlassian.net/browse/ANW-805 (2.5.1 bug)
+            digital_objects = self.new_xml.findall(
+                '//{0}dao'.format(namespace))
+            for dao in digital_objects:
+                del dao.attrib['{http://www.w3.org/1999/xlink}audience']
 
         def string_operations(self):
             """
@@ -153,9 +186,12 @@ class FindingAid(object):
             Performs final tidying.
             """
             # XML to string
-            self.new_xml = str(etree.tostring(
-                self.new_xml, pretty_print=True, xml_declaration=True, encoding='UTF-8'
-                ), 'utf-8')
+            self.new_xml = str(
+                etree.tostring(
+                    self.new_xml,
+                    pretty_print=True,
+                    xml_declaration=True,
+                    encoding='UTF-8'), 'utf-8')
 
             # remove namespace declarations within individual elements
             xmlns = re.compile(
@@ -197,7 +233,8 @@ class FindingAid(object):
         abs_path = os.path.abspath(self.ead_path)
 
         # normalize filename if it matches ArchivesSpace automated naming scheme
-        aspace_re = re.compile(r'([A-Za-z0-9\.]+)_[0-9]{8}_[0-9]{6}_UTC__ead\.xml')
+        aspace_re = re.compile(
+            r'([A-Za-z0-9\.]+)_[0-9]{8}_[0-9]{6}_UTC__ead\.xml')
         autonamed = aspace_re.match(filename)
         if autonamed is not None:
             filename = self.ead_id
