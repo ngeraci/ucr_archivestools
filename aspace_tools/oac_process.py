@@ -32,29 +32,26 @@ def main(args=None):
         description="""oac_process takes an EAD file exported from
         ArchivesSpace, does standard edits for upload to OAC,
         and moves it to the shared drive.""")
-    parser.add_argument(
-        'files', nargs='*', help="one or more files to process")
-    parser.add_argument(
-        '--wrca',
-        action='store_true',
-        help="""use --wrca when
+    parser.add_argument('files',
+                        nargs='*',
+                        help="one or more files to process")
+    parser.add_argument('--wrca',
+                        action='store_true',
+                        help="""use --wrca when
         processing WRCA file(s).""")
-    parser.add_argument(
-        '--in-place',
-        action='store_true',
-        help="""use --in-place if
+    parser.add_argument('--in-place',
+                        action='store_true',
+                        help="""use --in-place if
         you want to process the file where it is, instead of moving it
         to the standard shared drive location""")
-    parser.add_argument(
-        '--keep-raw',
-        action='store_true',
-        help="""use --keep-raw if
+    parser.add_argument('--keep-raw',
+                        action='store_true',
+                        help="""use --keep-raw if
         you want to keep the original file(s) downloaded from
         ArchivesSpace. Otherwise, they'll be deleted.""")
-    parser.add_argument(
-        '--ignore-validate',
-        action='store_true',
-        help="""use --ignore-validate
+    parser.add_argument('--ignore-validate',
+                        action='store_true',
+                        help="""use --ignore-validate
         to ignore EAD validation errors.""")
 
     # print help if no args given
@@ -83,7 +80,6 @@ class FindingAid(object):
     """
     Finding aid object represents an EAD file for an archival finding aid.
     """
-
     def __init__(self, filename, wrca, in_place, keep_raw):
         self.ead_path = filename
         self.ead_id = None
@@ -99,16 +95,14 @@ class FindingAid(object):
         Assign <eadid> element from EAD to self.ead_id.
 
         """
-
         def xslt_transform(self):
             """
             Applies XSLT transformation.
             Assigns processed EAD string to self.new_xml.
             """
-            parser = etree.XMLParser(
-                resolve_entities=False,
-                strip_cdata=False,
-                remove_blank_text=True)
+            parser = etree.XMLParser(resolve_entities=False,
+                                     strip_cdata=False,
+                                     remove_blank_text=True)
             xml_tree = etree.parse(self.ead_path, parser)
 
             working_dir = os.path.dirname(os.path.abspath(__file__))
@@ -173,12 +167,14 @@ class FindingAid(object):
                 series_list.attrib['type'] = 'simple'
 
             # digital objects
-            ## remove "xlink:audience" attribute from all DAOs
-            ## see https://archivesspace.atlassian.net/browse/ANW-805 (2.5.1 bug)
             digital_objects = self.new_xml.findall(
                 '//{0}dao'.format(namespace))
             for dao in digital_objects:
+                ## remove "xlink:audience" attribute from all DAOs
+                ## see https://archivesspace.atlassian.net/browse/ANW-805 (2.5.1 bug)
                 del dao.attrib['{http://www.w3.org/1999/xlink}audience']
+                ## remove daodesc sub-element
+                dao.remove(dao.find('{0}daodesc'.format(namespace)))
 
         def string_operations(self):
             """
@@ -187,11 +183,10 @@ class FindingAid(object):
             """
             # XML to string
             self.new_xml = str(
-                etree.tostring(
-                    self.new_xml,
-                    pretty_print=True,
-                    xml_declaration=True,
-                    encoding='UTF-8'), 'utf-8')
+                etree.tostring(self.new_xml,
+                               pretty_print=True,
+                               xml_declaration=True,
+                               encoding='UTF-8'), 'utf-8')
 
             # remove namespace declarations within individual elements
             xmlns = re.compile(
