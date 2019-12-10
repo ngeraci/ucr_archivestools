@@ -82,7 +82,7 @@
             <xsl:copy-of select="ead:abstract"/>
             <!--haven't figured out how to add <language> tag and ISO value-->
             <langmaterial label="Languages">
-                <xsl:value-of select="ead:langmaterial[2]"/>
+                <xsl:value-of select="ead:langmaterial"/>
             </langmaterial>
         </did>
     </xsl:template>
