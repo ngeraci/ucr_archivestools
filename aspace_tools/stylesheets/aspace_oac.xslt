@@ -56,7 +56,7 @@
             </unitid>
             <xsl:for-each select="ead:origination">
                 <xsl:choose>
-                    <xsl:when test="@label='creator'">
+                    <xsl:when test="@label='creator' or @label='Creator'">
                         <origination label="Creator">
                             <xsl:copy-of select="child::node()"/>
                         </origination>
