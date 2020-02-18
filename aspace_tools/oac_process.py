@@ -172,7 +172,7 @@ class FindingAid(object):
             for dao in digital_objects:
                 ## remove "xlink:audience" attribute from all DAOs
                 ## see https://archivesspace.atlassian.net/browse/ANW-805 (2.5.1 bug)
-                del dao.attrib['{http://www.w3.org/1999/xlink}audience']
+                dao.attrib.pop('{http://www.w3.org/1999/xlink}audience', None)
                 ## remove daodesc sub-element
                 dao.remove(dao.find('{0}daodesc'.format(namespace)))
 
