@@ -163,7 +163,7 @@ class FindingAid(object):
             ## (since that's where we normally mean to use unordered lists)
             series_list = self.new_xml.find(
                 '//{0}arrangement/{0}list'.format(namespace))
-            if len(series_list) > 0:
+            if series_list:
                 series_list.attrib['type'] = 'simple'
 
             # digital objects
