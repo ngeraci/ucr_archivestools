@@ -13,6 +13,7 @@ For our older cleanup project scripts, see **[archivesspace_scripts](https://git
 ````
 git clone https://github.com/ngeraci/ucr_archivestools.git
 cd ucr_archivestools
+pip install -r requirements.txt
 python setup.py install
 ````
 
