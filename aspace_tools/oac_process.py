@@ -127,10 +127,19 @@ class FindingAid(object):
             # strip <num> tag from <titleproper>
             numtag = self.new_xml.find(
                 '//{0}titleproper/{0}num'.format(namespace))
+            emph = self.new_xml.find(
+                '//{0}titleproper//{0}emph'.format(namespace))
             if numtag is not None:
                 titleproper = numtag.getparent()
                 titleproper.remove(numtag)
-                titleproper.text = titleproper.text.strip()
+                # manage trailing space after removing <num>
+                if emph is None:
+                    titleproper.text = titleproper.text.strip()
+                else:
+                    # title starts with <emph> tag
+                    emph = self.new_xml.find(
+                        '//{0}titleproper//{0}emph'.format(namespace))
+                    emph.tail = emph.tail.rstrip()
 
             # ISO markup for <langmaterial> element, for example:
             # <langmaterial>The collection is in <language langcode="eng">English</language>
