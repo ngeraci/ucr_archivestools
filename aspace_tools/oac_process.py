@@ -63,14 +63,14 @@ def main(args=None):
         args = parser.parse_args()
 
     for file in args.files:
-        try:
-            finding_aid = FindingAid(file, args.wrca, args.in_place,
-                                     args.keep_raw)
-            finding_aid.process()
-        except OSError:
-            print("*ERROR*\nFile not found:", file)
-        except SyntaxError:
-            print("*ERROR*\nNot a valid EAD file:", file)
+        # try:
+        finding_aid = FindingAid(file, args.wrca, args.in_place,
+                                 args.keep_raw)
+        finding_aid.process()
+        # except OSError:
+        #     print("*ERROR*\nFile not found:", file)
+        # except SyntaxError:
+        #     print("*ERROR*\nNot a valid EAD file:", file)
         if not args.ignore_validate:
             finding_aid.validate()
         finding_aid.write_out()
@@ -120,25 +120,24 @@ class FindingAid:
             Assigns <eadid> value to self.ead_id.
             """
             namespace = '{urn:isbn:1-931666-22-9}'
-            # get <eadid> to use as filename
-            self.ead_id = self.new_xml.find(
-                '//{0}eadheader/{0}eadid'.format(namespace)).text.strip()
+            root = self.new_xml.getroot()
+            self.ead_id = root.find('./eadheader/eadid', root.nsmap).text.strip()
 
             # strip <num> tag from <titleproper>
-            numtag = self.new_xml.find(
-                '//{0}titleproper/{0}num'.format(namespace))
-            emph = self.new_xml.find(
-                '//{0}titleproper//{0}emph'.format(namespace))
+            numtag = root.find(
+                './/titleproper/num', root.nsmap)
+            emph = root.find(
+                './/titleproper//emph', root.nsmap)
             if numtag is not None:
-                titleproper = numtag.getparent()
-                titleproper.remove(numtag)
-                # manage trailing space after removing <num>
+                title_proper = numtag.getparent()
+                title_proper.remove(numtag)
+                # if title does not contain emph tag,
+                # just take the text from titleproper tag and strip whitespace 
                 if emph is None:
-                    titleproper.text = titleproper.text.strip()
+                    title_proper.text = title_proper.text.strip()
                 else:
-                    # title starts with <emph> tag
-                    emph = self.new_xml.find(
-                        '//{0}titleproper//{0}emph'.format(namespace))
+                    # if title contains emph tag, just strip whitespace
+                    # from the text that follows <emph>
                     emph.tail = emph.tail.rstrip()
 
             # ISO markup for <langmaterial> element, for example:
@@ -146,8 +145,8 @@ class FindingAid:
             # TODO: Figure out how to do this more cleanly (not a simple fix, may require XSLT):
             #       * https://stackoverflow.com/questions/1973026/insert-tags-in-elementtree-text
             #       * https://kurtraschke.com/2010/09/lxml-inserting-elements-in-text/
-            langmaterial = self.new_xml.find(
-                '//{0}archdesc/{0}did/{0}langmaterial'.format(namespace))
+            langmaterial = root.find(
+                './archdesc/did/langmaterial', root.nsmap)
             if langmaterial.text is not None:
                 for lang in languages:
                     code = lang.bibliographic
@@ -162,7 +161,7 @@ class FindingAid:
                 sys.stdout.flush()
 
             # lowercase "Linear Feet" in <extent>
-            extent = self.new_xml.find('//{0}extent'.format(namespace))
+            extent = root.find('.//extent', root.nsmap)
             if 'Linear Feet' in extent.text:
                 extent.text = re.sub(r'Linear\s+Feet', 'linear feet',
                                      extent.text)
@@ -170,14 +169,14 @@ class FindingAid:
             # simple list bug: https://archivesspace.atlassian.net/browse/ANW-275
             ## currently using blunt method to make sure list in arrangement section has type "simple"
             ## (since that's where we normally mean to use unordered lists)
-            series_list = self.new_xml.find(
-                '//{0}arrangement/{0}list'.format(namespace))
+            series_list = root.find(
+                './archdesc/arrangement//list', root.nsmap)
             if series_list is not None:
                 series_list.attrib['type'] = 'simple'
 
             # digital objects
-            digital_objects = self.new_xml.findall(
-                '//{0}dao'.format(namespace))
+            digital_objects = root.findall(
+                './/dao', root.nsmap)
             for dao in digital_objects:
                 ## remove "xlink:audience" attribute from all DAOs
                 ## see https://archivesspace.atlassian.net/browse/ANW-805 (2.5.1 bug)
@@ -280,3 +279,6 @@ class FindingAid:
         print(filename, 'processed')
         print('Location:', outpath)
         sys.stdout.flush()
+
+if __name__ == '__main__':
+    main()
