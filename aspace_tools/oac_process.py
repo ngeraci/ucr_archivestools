@@ -62,15 +62,15 @@ def main(args=None):
     if args is None:
         args = parser.parse_args()
 
-    for i in range(len(args.files)):
+    for file in args.files:
         try:
-            finding_aid = FindingAid(args.files[i], args.wrca, args.in_place,
+            finding_aid = FindingAid(file, args.wrca, args.in_place,
                                      args.keep_raw)
             finding_aid.process()
         except OSError:
-            print("*ERROR*\nFile not found:", args.files[i])
+            print("*ERROR*\nFile not found:", file)
         except SyntaxError:
-            print("*ERROR*\nNot a valid EAD file:", args.files[i])
+            print("*ERROR*\nNot a valid EAD file:", file)
         if not args.ignore_validate:
             finding_aid.validate()
         finding_aid.write_out()
