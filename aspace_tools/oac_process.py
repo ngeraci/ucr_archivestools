@@ -172,7 +172,7 @@ class FindingAid(object):
             ## (since that's where we normally mean to use unordered lists)
             series_list = self.new_xml.find(
                 '//{0}arrangement/{0}list'.format(namespace))
-            if series_list:
+            if series_list is not None:
                 series_list.attrib['type'] = 'simple'
 
             # digital objects
