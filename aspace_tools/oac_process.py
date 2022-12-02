@@ -76,7 +76,7 @@ def main(args=None):
         finding_aid.write_out()
 
 
-class FindingAid(object):
+class FindingAid:
     """
     Finding aid object represents an EAD file for an archival finding aid.
     """
