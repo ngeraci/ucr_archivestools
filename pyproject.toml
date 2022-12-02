@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aspace_tools"
+version = "0.3"
+dependencies = ["requests", "lxml", "iso-639"]
+
+[project.scripts]
+oac-process = "aspace_tools.oac_process:main"
+
+[tool.setuptools.packages]
+find = {}
